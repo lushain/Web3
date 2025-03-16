@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-lg shadow-md overflow-hidden" x-data="paymentForm()">
+        <!-- Header -->
+        <div class="bg-indigo-600 p-6">
+            <h1 class="text-white text-xl font-bold">Payment Gateway</h1>
+            <p class="text-indigo-100 mt-1">Choose your preferred payment method</p>
+        </div>
+        
+        <!-- Payment Form -->
+        <form id="paymentForm" action="/payments" method="POST" class="p-6">
+            <!-- Payment Method Selection -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <button type="button"
+                        @click="setPaymentMethod('upi')" 
+                        :class="paymentMethod === 'upi' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-500'"
+                        class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        UPI
+                    </button>
+                    <button type="button"
+                        @click="setPaymentMethod('netbanking')" 
+                        :class="paymentMethod === 'netbanking' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-500'"
+                        class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Net Banking
+                    </button>
+                    <button type="button"
+                        @click="setPaymentMethod('debitcard')" 
+                        :class="paymentMethod === 'debitcard' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-500'"
+                        class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Debit Card
+                    </button>
+                    <button type="button"
+                        @click="setPaymentMethod('creditcard')" 
+                        :class="paymentMethod === 'creditcard' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-500'"
+                        class="border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Credit Card
+                    </button>
+                </div>
+                <!-- Hidden input to store payment method -->
+                <input type="hidden" name="payment_method" x-model="paymentMethod">
+            </div>
+            
+            <!-- UPI Payment Form -->
+            <div x-show="paymentMethod === 'upi'" class="space-y-4">
+                <div>
+                    <label for="upi-id" class="block text-sm font-medium text-gray-700 mb-1">UPI ID</label>
+                    <input type="text" id="upi-id" name="upi_id" placeholder="username@bankname" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <!-- Net Banking Form -->
+            <div x-show="paymentMethod === 'netbanking'" class="space-y-4">
+                <div>
+                    <label for="bank" class="block text-sm font-medium text-gray-700 mb-1">Select Bank</label>
+                    <select id="bank" name="bank_name" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Select your bank</option>
+                        <option value="sbi">State Bank of India</option>
+                        <option value="hdfc">HDFC Bank</option>
+                        <option value="icici">ICICI Bank</option>
+                        <option value="axis">Axis Bank</option>
+                        <option value="other">Other Bank</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Debit Card Form -->
+            <div x-show="paymentMethod === 'debitcard'" class="space-y-4">
+                <div>
+                    <label for="debit-card-number" class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                    <input type="text" id="debit-card-number" name="debit_card_number" placeholder="1234 5678 9012 3456" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="debit-expiry" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                        <input type="text" id="debit-expiry" name="debit_card_expiry" placeholder="MM/YY" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="debit-cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                        <input type="text" id="debit-cvv" name="debit_card_cvv" placeholder="123" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="debit-card-name" class="block text-sm font-medium text-gray-700 mb-1">Name on Card</label>
+                    <input type="text" id="debit-card-name" name="debit_card_name" placeholder="John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <!-- Credit Card Form -->
+            <div x-show="paymentMethod === 'creditcard'" class="space-y-4">
+                <div>
+                    <label for="credit-card-number" class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                    <input type="text" id="credit-card-number" name="credit_card_number" placeholder="1234 5678 9012 3456" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="credit-expiry" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                        <input type="text" id="credit-expiry" name="credit_card_expiry" placeholder="MM/YY" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="credit-cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                        <input type="text" id="credit-cvv" name="credit_card_cvv" placeholder="123" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="credit-card-name" class="block text-sm font-medium text-gray-700 mb-1">Name on Card</label>
+                    <input type="text" id="credit-card-name" name="credit_card_name" placeholder="John Doe" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <!-- Transaction Type and Amount -->
+            <div class="mt-6 space-y-4" x-show="paymentMethod !== ''">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Transaction Type</label>
+                    <div class="flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="transaction_type" value="deposit" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" checked>
+                            <span class="ml-2 text-sm text-gray-700">Deposit</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="transaction_type" value="withdraw" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="ml-2 text-sm text-gray-700">Withdraw</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">₹</span>
+                        </div>
+                        <input type="text" id="amount" name="amount" placeholder="0.00" class="w-full pl-7 pr-12 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">INR</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors mt-4">
+                    Process Payment
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function paymentForm() {
+            return {
+                paymentMethod: '',
+                setPaymentMethod(method) {
+                    this.paymentMethod = method;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

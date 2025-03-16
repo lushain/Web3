@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+*.venv
+*.env
+*.virtualenv
+
+# Flask & Python-related logs
+instance/
+*.log
+*.sqlite3
+
+# Ignore database migrations and local SQLite DB
+migrations/
+db.sqlite3
+
+# Ignore uploaded files (optional)
+uploads/
+
+# Environment variables (security reasons)
+.env
+*.env
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore OS files
+.DS_Store
+Thumbs.db

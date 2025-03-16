@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Lending</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <!-- Confirmation Card -->
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
+        <h2 class="text-2xl font-bold text-gray-800">Confirm Lending</h2>
+        <p class="text-gray-600 mt-2">Are you sure you want to lend to <strong>{{ lending_request.user.username }}</strong>?</p>
+
+        <!-- Lending Details -->
+        <div class="mt-4 text-left border-t pt-4 space-y-2">
+            <p class="text-gray-700"><strong>Amount:</strong> ₹{{ lending_request.amount }}</p>
+            <p class="text-gray-700"><strong>Duration:</strong> {{ lending_request.time_period }} </p>
+            <p class="text-gray-700"><strong>Interest Rate:</strong> {{ lending_request.interest_rate }}</p>
+            <p class="text-gray-700"><strong>Date Requested:</strong> {{ lending_request.timestamp }}</p>
+        </div>
+
+        <!-- Warning -->
+        <p class="text-red-500 text-sm mt-2">Once confirmed, this transaction cannot be reversed.</p>
+
+        <!-- Confirmation Buttons -->
+        <form action="{{ url_for('routes.lend_request', lending_req_id=lending_request.id) }}" method="POST" class="mt-4 flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4">
+            <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition">
+                Confirm & Lend
+            </button>
+            <a href="/dashboard" class="text-gray-600 hover:underline text-sm py-2 sm:py-0">
+                Cancel
+            </a>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#12a7c7',
+                        primaryDark: '#005766',
+                        secondary: '#E5F5F8',
+                        textDark: '#333333',
+                        success: '#8BC34A'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .f-el{
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+        }
+        .l-el{
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        .border-b{
+            border-bottom: 10px solid #ffffff;
+            border-top: 10px solid #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
+                <span class="text-4xl font-bold">Cred Sure</span></div>
+            
+            <div class="hidden md:block">
+                <button class="bg-primary hover:bg-primaryDark text-white font-medium py-2 px-6 rounded-full transition duration-200">
+                    Marketplace
+                </button>
+            </div>
+            
+            <div class="flex items-center">
+                <span class="mr-4 hidden sm:inline-block">Balance: ₹{{ current_user.balance }}</span>
+                <!-- User Dropdown -->
+                <div class="relative">
+                    <button id="user-menu" class="flex items-center gap-2 px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition">
+                        <span class="font-medium text-gray-600">{{ current_user.username }}</span>
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="absolute right-0 mt-2 bg-white shadow-md rounded-xl w-40 hidden" id="dropdown">
+                        <a href="/payments" class="block px-4 py-2 text-[#12a7c7] hover:bg-gray-100">Add</a>
+                        <a href="/payments" class="block px-4 py-2 text-[#12a7c7] hover:bg-gray-100">Withdraw</a>
+                        <a href="{{ url_for('routes.logout') }}" class="block px-4 py-2 text-red-500 hover:bg-gray-100">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {% if not current_user.verified %}
+    <div class="mt-6 max-w-7xl mx-auto p-4 bg-red-400 shadow-md rounded-md flex justify-between items-center">
+        <h2 class="text-lg font-bold">Upload Documents</h2>
+        <a href="/files" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Upload</a>
+    </div>
+
+    {% else %}
+    <!-- User Profile Section -->
+    <section class="container mx-auto px-4 py-6">
+        <div class="rounded-lg p-6 flex flex-col md:flex-row items-start md:items-center justify-between">
+            <div class="flex items-center mb-4 md:mb-0">
+                <div class="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold">
+                    {{ current_user.username[0].upper() }}
+                </div>
+                <div class="ml-4">
+                    <h2 class="text-lg font-semibold">{{ current_user.username }}</h2>
+                    <p class="text-gray-600 text-sm">{{ current_user.email }}</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap gap-6 mb-4 md:mb-0">
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Total Lent</p>
+                    <p class="text-green-500 font-semibold">₹{{ total_lent }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Total Borrowed</p>
+                    <p class="text-red-500 font-semibold">₹{{total_borrowed }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Balance</p>
+                    <p class="text-primary font-semibold">₹{{ current_user.balance }}</p>
+                </div>
+            </div>
+            
+            <a href="/users/{{ current_user.id }}"><button class="bg-primary hover:bg-primaryDark text-white font-medium py-2 px-6 rounded-md transition duration-200">
+                View Profile
+            </button></a>
+        </div>
+    </section>
+
+
+     <!-- Main Content -->
+    <div class="container container max-w-7xl mx-auto px-4 py-6 mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+        <!-- Lent Section -->
+        <div class="bg-white shadow-md rounded-md p-4">
+            <h2 class="text-xl font-bold mb-4">Lent</h2>
+            <div class="max-h-[500px] overflow-y-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-primary text-white">
+                            <th class="f-el py-3 px-4 text-left">Name</th>
+                            <th class="py-3 px-4 text-left">Amount</th>
+                            <th class="py-3 px-4 text-left">Duration</th>
+                            <th class="py-3 px-4 text-left">Rate</th>
+                            <th class="l-el py-3 px-4 text-left">Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lentTableBody">
+                        {% for loan in lent %}
+                        <tr class="bg-[#f4f4f4]">
+                            <td class="p-3 f-el border-b">{{ loan.person_name }}</td>
+                            <td class="p-3 text-green-500 border-b">₹{{ loan.amount }}</td>
+                            <td class="p-3 border-b">{{ loan.time_period }}</td>
+                            <td class="p-3 text-green-500 border-b">{{ loan.rate }}%</td>
+                            <td class="p-3 l-el border-b">{{ loan.timestamp}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if not lent %}
+                <div id="lentEmptyState" class="py-8 text-center text-gray-500">
+                    No lending records found.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    
+        <!-- Borrowed Section -->
+        <div class="bg-white shadow-md rounded-md p-4">
+            <h2 class="text-xl font-bold mb-4">Borrowed</h2>
+            <div class="max-h-[500px] overflow-y-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-primary text-white">
+                            <th class="f-el py-3 px-4 text-left">Name</th>
+                            <th class="py-3 px-4 text-left">Amount</th>
+                            <th class="py-3 px-4 text-left">Duration</th>
+                            <th class="py-3 px-4 text-left">Rate</th>
+                            <th class="l-el py-3 px-4 text-left">Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="borrowedTableBody">
+                        {% for debt in borrowed %}
+                        <tr class="bg-[#f4f4f4]">
+                            <td class="f-el p-3 border-b">{{ debt.person_name }}</td>
+                            <td class="p-3 text-red-500 border-b">₹{{ debt.amount }}</td>
+                            <td class="p-3 border-b">{{ debt.time_period }}</td>
+                            <td class="p-3 border-b">{{ debt.rate }}%</td>
+                            <td class="l-el p-3 border-b">{{ debt.timestamp}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if not borrowed %}
+                <div id="lentEmptyState" class="py-8 text-center text-gray-500">
+                    No borrowing records found.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    
+    </div>
+
+    <!-- Marketplace Section -->
+    <section class="container max-w-7xl mx-auto px-4 py-6 mb-8">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Marketplace</h2>
+                <button id="openModal" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition duration-200 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add Request
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="py-3 px-4 text-left">Name</th>
+                            <th class="py-3 px-4 text-left">Amount</th>
+                            <th class="py-3 px-4 text-left">Duration</th>
+                            <th class="py-3 px-4 text-left">Rate</th>
+                            <th class="py-3 px-4 text-left">Date</th>
+                            <th class="py-3 px-4 text-left">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in lending_requests %}
+                        <tr>
+                            <td class="p-2 mt-6 border-b underline"><a href="/users/{{ request.user.id }}">{{ request.user.username }}</a></td>
+                            <td class="p-2 border-b">₹{{ request.amount }}</td>
+                            <td class="p-2 border-b">{{ request.time_period }}</td>
+                            <td class="p-2 text-green-500 border-b">{{ request.interest_rate }}%</td>
+                            <td class="p-2 border-b">{{ request.timestamp }}</td>
+                            <td class="p-2 border-b">
+                                {% if request.user.id != current_user.id %}
+                                <a href="{{ url_for('routes.lend_request', lending_req_id=request.id) }}" class="bg-green-500 text-white px-3 py-1 rounded-md">Lend</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Add Request Modal -->
+    <div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-md shadow-lg w-96">
+            <h2 class="text-xl font-bold text-gray-800">Add Lending Request</h2>
+            <form action="/publish_lending_request" method="POST" class="">
+                <div class="mt-4">
+                    <label class="block text-gray-700">Amount</label>
+                    <input type="number" name="amount" class="w-full px-4 py-2 border rounded-md" placeholder="Enter amount">
+                </div>
+                <div class="mt-4">
+                    <label class="block text-gray-700">Time Period</label>
+                    <input type="text" name="time_period" class="w-full px-4 py-2 border rounded-md" placeholder="Enter duration">
+                </div>
+                <div class="mt-4">
+                    <label class="block text-gray-700">Interest Rate</label>
+                    <input name="rate" type="text" class="w-full px-4 py-2 border rounded-md bg-gray-200" placeholder="Format: X.XX">
+                    <!-- <p class="text-sm text-gray-500 mt-1">Interest rates are standard at 3% and cannot be changed.</p> -->
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button type="button" id="closeModal" class="px-4 py-2 text-gray-600">Cancel</button>
+                    <button type="submit" class="ml-2 bg-[#12a7c7] text-white px-6 py-2 rounded-md">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <script>
+        document.getElementById("openModal").addEventListener("click", function() {
+            document.getElementById("modal").classList.remove("hidden");
+        });
+        document.getElementById("closeModal").addEventListener("click", function() {
+            document.getElementById("modal").classList.add("hidden");
+        });
+        // JavaScript for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal functionality
+
+            // Form submission
+            requestForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const amount = document.getElementById('amount').value;
+                const duration = document.getElementById('duration').value;
+                const rate = document.getElementById('rate').value;
+                
+                // Here you would typically send this data to your backend
+                console.log('New request:', { amount, duration, rate });
+                
+                // Add to marketplace table (for demo purposes)
+                const marketplaceTable = document.querySelector('#marketplace tbody');
+                const newRow = document.createElement('tr');
+                newRow.classList.add('hover:bg-gray-50');
+                newRow.innerHTML = `
+                    <td class="py-3 px-4">vyom</td>
+                    <td class="py-3 px-4">₹₹{parseFloat(amount).toFixed(1)}</td>
+                    <td class="py-3 px-4">₹{duration}</td>
+                    <td class="py-3 px-4 text-green-600">₹{parseFloat(rate).toFixed(2)}%</td>
+                    <td class="py-3 px-4">03/16/25</td>
+                    <td class="py-3 px-4">
+                        <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-1 px-4 rounded-md text-sm transition duration-200">
+                            Lend
+                        </button>
+                    </td>
+                `;
+                
+                closeModal();
+            });
+
+            // Empty states for tables
+            const lentTableBody = document.getElementById('lentTableBody');
+            const borrowedTableBody = document.getElementById('borrowedTableBody');
+            const lentEmptyState = document.getElementById('lentEmptyState');
+            const borrowedEmptyState = document.getElementById('borrowedEmptyState');
+
+            // Check if tables are empty and show empty state
+            if (lentTableBody.children.length === 0) {
+                lentEmptyState.style.display = 'block';
+            } else {
+                lentEmptyState.style.display = 'none';
+            }
+
+            if (borrowedTableBody.children.length === 0) {
+                borrowedEmptyState.style.display = 'block';
+            } else {
+                borrowedEmptyState.style.display = 'none';
+            }
+        });
+
+        document.querySelector(".relative button").addEventListener("click", function() {
+            document.getElementById("dropdown").classList.toggle("hidden");
+        });
+    </script>
+</body>
+</html>

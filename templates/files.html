@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="your-csrf-token-here">
+    <title>Secure Document Upload - Cred Sure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#12a7c7',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-bold text-accent">Secure Document Upload</h1>
+                <div class="bg-accent bg-opacity-10 text-accent px-4 py-2 rounded-full flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                    </svg>
+                    Secure Window
+                </div>
+            </div>
+            
+            <p class="mb-6 text-gray-600">Please upload the following documents to complete your verification. All files are encrypted during transmission and storage.</p>
+            <form action="/files" method="post">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Bank Statement -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-semibold text-gray-800 mb-2">Bank Statement</h3>
+                    <p class="text-sm text-gray-600 mb-3">Upload your most recent bank statement (last 3 months)</p>
+                    <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="bank-drop-zone">
+                        <input required type="file" id="bank-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" />
+                        <label for="bank-file-input" class="flex flex-col items-center justify-center cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <span class="text-sm font-medium text-accent">Choose file or drag & drop</span>
+                            <span class="text-xs text-gray-500 mt-1">PDF, JPG or PNG (Max 5MB)</span>
+                        </label>
+                        <div id="bank-preview" class="mt-3"></div>
+                    </div>
+                </div>
+                
+                <!-- Collateral Documents -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-semibold text-gray-800 mb-2">Collateral Documents</h3>
+                    <p class="text-sm text-gray-600 mb-3">Upload documents showing ownership of collateral</p>
+                    <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="collateral-drop-zone">
+                        <input type="file" required id="collateral-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple />
+                        <label for="collateral-file-input" class="flex flex-col items-center justify-center cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <span class="text-sm font-medium text-accent">Choose files or drag & drop</span>
+                            <span class="text-xs text-gray-500 mt-1">PDF, JPG or PNG (Max 5MB each)</span>
+                        </label>
+                        <div id="collateral-preview" class="mt-3"></div>
+                    </div>
+                </div>
+                
+                <!-- Utility Bills -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-semibold text-gray-800 mb-2">Utility Bills</h3>
+                    <p class="text-sm text-gray-600 mb-3">Upload electricity or gas bill from the last 3 months</p>
+                    <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="utility-drop-zone">
+                        <input type="file" required id="utility-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple />
+                        <label for="utility-file-input" class="flex flex-col items-center justify-center cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <span class="text-sm font-medium text-accent">Choose files or drag & drop</span>
+                            <span class="text-xs text-gray-500 mt-1">PDF, JPG or PNG (Max 5MB each)</span>
+                        </label>
+                        <div id="utility-preview" class="mt-3"></div>
+                    </div>
+                </div>
+                
+                <!-- Proof of Address -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-semibold text-gray-800 mb-2">Proof of Address</h3>
+                    <p class="text-sm text-gray-600 mb-3">Upload government-issued ID or other proof of address</p>
+                    <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="address-drop-zone">
+                        <input type="file" required id="address-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" />
+                        <label for="address-file-input" class="flex flex-col items-center justify-center cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <span class="text-sm font-medium text-accent">Choose file or drag & drop</span>
+                            <span class="text-xs text-gray-500 mt-1">PDF, JPG or PNG (Max 5MB)</span>
+                        </label>
+                        <div id="address-preview" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <div class="bg-blue-50 border-l-4 border-accent p-4 mb-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">
+                                Your documents are protected with bank-level encryption. We use HTTPS to encrypt data during transfer and implement strict access controls.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                    Upload Documents
+                </button>
+            </div>
+        </form>
+        </div>
+    </div>
+
+    <script>
+        // Basic JavaScript for drag and drop functionality
+        const dropZones = ['bank', 'collateral', 'utility', 'address'];
+        
+        dropZones.forEach(zone => {
+            const dropZone = document.getElementById(`₹{zone}-drop-zone`);
+            const fileInput = document.getElementById(`₹{zone}-file-input`);
+            const preview = document.getElementById(`₹{zone}-preview`);
+            
+            // Drag and drop events
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-accent');
+                dropZone.classList.add('bg-accent/5');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-accent');
+                dropZone.classList.remove('bg-accent/5');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-accent');
+                dropZone.classList.remove('bg-accent/5');
+                
+                const files = e.dataTransfer.files;
+                handleFiles(files, preview);
+                
+                // Update the file input
+                fileInput.files = files;
+            });
+            
+            fileInput.addEventListener('change', () => {
+                handleFiles(fileInput.files, preview);
+            });
+        });
+        
+        function handleFiles(files, previewElement) {
+            previewElement.innerHTML = '';
+            
+            for (const file of files) {
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                
+                if (fileSize > 5) {
+                    showError(previewElement, `₹{file.name} exceeds the 5MB size limit`);
+                    continue;
+                }
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex items-center justify-between bg-white p-2 rounded mt-2 text-sm';
+                
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'flex items-center';
+                
+                const fileIcon = document.createElement('span');
+                fileIcon.className = 'text-gray-500 mr-2';
+                fileIcon.innerHTML = '📄';
+                
+                const fileName = document.createElement('span');
+                fileName.className = 'truncate max-w-xs';
+                fileName.textContent = file.name;
+                
+                const fileRemove = document.createElement('button');
+                fileRemove.className = 'text-red-500 hover:text-red-700';
+                fileRemove.innerHTML = '&times;';
+                fileRemove.onclick = () => fileItem.remove();
+                
+                fileInfo.appendChild(fileIcon);
+                fileInfo.appendChild(fileName);
+                fileItem.appendChild(fileInfo);
+                fileItem.appendChild(fileRemove);
+                previewElement.appendChild(fileItem);
+            }
+        }
+        
+        function showError(element, message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-red-500 text-xs mt-1';
+            errorDiv.textContent = message;
+            element.appendChild(errorDiv);
+        }
+    </script>
+</body>
+</html>
