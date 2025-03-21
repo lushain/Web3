@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from models import db
-from routes import routes, login_manager, bcrypt
+from routes import login_manager, bcrypt
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -19,7 +19,8 @@ bcrypt.init_app(app)
 login_manager.init_app(app)
 
 # Register Routes
-app.register_blueprint(routes)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from routes import routes
+    app.register_blueprint(routes)
+    app.run(host='0.0.0.0',debug=True)

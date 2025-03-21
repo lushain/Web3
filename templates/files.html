@@ -128,87 +128,109 @@
     </div>
 
     <script>
-        // Basic JavaScript for drag and drop functionality
-        const dropZones = ['bank', 'collateral', 'utility', 'address'];
-        
-        dropZones.forEach(zone => {
-            const dropZone = document.getElementById(`₹{zone}-drop-zone`);
-            const fileInput = document.getElementById(`₹{zone}-file-input`);
-            const preview = document.getElementById(`₹{zone}-preview`);
-            
-            // Drag and drop events
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('border-accent');
-                dropZone.classList.add('bg-accent/5');
-            });
-            
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('border-accent');
-                dropZone.classList.remove('bg-accent/5');
-            });
-            
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('border-accent');
-                dropZone.classList.remove('bg-accent/5');
-                
-                const files = e.dataTransfer.files;
-                handleFiles(files, preview);
-                
-                // Update the file input
-                fileInput.files = files;
-            });
-            
-            fileInput.addEventListener('change', () => {
-                handleFiles(fileInput.files, preview);
-            });
-        });
-        
-        function handleFiles(files, previewElement) {
-            previewElement.innerHTML = '';
-            
-            for (const file of files) {
-                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-                
-                if (fileSize > 5) {
-                    showError(previewElement, `₹{file.name} exceeds the 5MB size limit`);
-                    continue;
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropZones = ['bank', 'collateral', 'utility', 'address'];
+    
+            dropZones.forEach(zone => {
+                const dropZone = document.getElementById(zone+'-drop-zone');
+                const fileInput = document.getElementById(`${zone}-file-input`);
+                const preview = document.getElementById(`${zone}-preview`);
+    
+                if (!dropZone || !fileInput || !preview) {
+                    console.error(`Missing elements for ${zone}`);
+                    return; // Skip if elements are missing
                 }
-                
-                const fileItem = document.createElement('div');
-                fileItem.className = 'flex items-center justify-between bg-white p-2 rounded mt-2 text-sm';
-                
-                const fileInfo = document.createElement('div');
-                fileInfo.className = 'flex items-center';
-                
-                const fileIcon = document.createElement('span');
-                fileIcon.className = 'text-gray-500 mr-2';
-                fileIcon.innerHTML = '📄';
-                
-                const fileName = document.createElement('span');
-                fileName.className = 'truncate max-w-xs';
-                fileName.textContent = file.name;
-                
-                const fileRemove = document.createElement('button');
-                fileRemove.className = 'text-red-500 hover:text-red-700';
-                fileRemove.innerHTML = '&times;';
-                fileRemove.onclick = () => fileItem.remove();
-                
-                fileInfo.appendChild(fileIcon);
-                fileInfo.appendChild(fileName);
-                fileItem.appendChild(fileInfo);
-                fileItem.appendChild(fileRemove);
-                previewElement.appendChild(fileItem);
+    
+                console.log(`Initializing ${zone}`);
+    
+                // Drag & Drop events
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('border-accent', 'bg-accent/5');
+                });
+    
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('border-accent', 'bg-accent/5');
+                });
+    
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('border-accent', 'bg-accent/5');
+    
+                    const files = e.dataTransfer.files;
+                    console.log(`Dropped files for ${zone}:`, files);
+    
+                    if (files.length > 0) {
+                        handleFiles(files, preview);
+                        
+                        // Update file input with dropped files
+                        const dataTransfer = new DataTransfer();
+                        for (const file of files) {
+                            dataTransfer.items.add(file);
+                        }
+                        fileInput.files = dataTransfer.files;
+                    }
+                });
+    
+                fileInput.addEventListener('change', () => {
+                    console.log(`File selected for ${zone}:`, fileInput.files);
+                    handleFiles(fileInput.files, preview);
+                });
+            });
+    
+            function handleFiles(files, previewElement) {
+                if (!previewElement) {
+                    console.error("Preview element not found!");
+                    return;
+                }
+    
+                previewElement.innerHTML = ''; // Clear previous previews
+    
+                for (const file of files) {
+                    console.log("Processing file:", file.name);
+    
+                    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+    
+                    if (fileSize > 5) {
+                        showError(previewElement, `${file.name} exceeds the 5MB size limit`);
+                        continue;
+                    }
+    
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'flex items-center justify-between bg-white p-2 rounded mt-2 text-sm shadow';
+    
+                    const fileInfo = document.createElement('div');
+                    fileInfo.className = 'flex items-center';
+    
+                    const fileIcon = document.createElement('span');
+                    fileIcon.className = 'text-gray-500 mr-2';
+                    fileIcon.innerHTML = '📄';
+    
+                    const fileName = document.createElement('span');
+                    fileName.className = 'truncate max-w-xs';
+                    fileName.textContent = file.name;
+    
+                    const fileRemove = document.createElement('button');
+                    fileRemove.className = 'text-red-500 hover:text-red-700';
+                    fileRemove.innerHTML = '&times;';
+                    fileRemove.onclick = () => fileItem.remove();
+    
+                    fileInfo.appendChild(fileIcon);
+                    fileInfo.appendChild(fileName);
+                    fileItem.appendChild(fileInfo);
+                    fileItem.appendChild(fileRemove);
+                    previewElement.appendChild(fileItem);
+                }
             }
-        }
-        
-        function showError(element, message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'text-red-500 text-xs mt-1';
-            errorDiv.textContent = message;
-            element.appendChild(errorDiv);
-        }
+    
+            function showError(element, message) {
+                console.warn("Error:", message);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'text-red-500 text-xs mt-1';
+                errorDiv.textContent = message;
+                element.appendChild(errorDiv);
+            }
+        });
     </script>
 </body>
 </html>

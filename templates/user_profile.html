@@ -48,9 +48,9 @@
         </div>
     </div>
 
-    {% if not current_user.verified %}
+    {% if not current_user.verified and current_user.id == user.id %}
     <div class="mt-6 max-w-7xl mx-auto p-4 bg-red-400 shadow-md rounded-md flex justify-between items-center">
-        <h2 class="text-lg font-bold">Upload Documents</h2>
+        <h2 class="text-lg font-bold">Documents</h2>
         <a href="/files" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Upload</a>
     </div>
 
@@ -87,6 +87,10 @@
                         <div>
                             <p class="text-gray-500 text-sm mb-1">Call Date</p>
                             <p class="font-medium">{{ request.timestamp}}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Duration</p>
+                            <p class="font-medium">{{ request.time_period}}</p>
                         </div>
                         <div>
                             <p class="text-gray-500 text-sm mb-1">Yield</p>
@@ -162,5 +166,6 @@
         </table>
     </div>
     {% endif %}
+
 </body>
 </html>

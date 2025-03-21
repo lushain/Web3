@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
-from models import db, User, Transaction, LendingRequest
+from models import db, User, Transaction, LendingRequest, Block, BlockchainTransaction
+import random
 
 # Initialize Flask Extensions
 bcrypt = Bcrypt()
@@ -12,7 +13,6 @@ login_manager.login_view = "routes.login"
 routes = Blueprint("routes", __name__)
 
 def show_dash():
-    
     return redirect(url_for("routes.dashboard"))
 
 # User Loader for Flask-Login
@@ -68,6 +68,9 @@ def login():
 def index():
     return render_template('index.html')
 
+@routes.route('/premium')
+def premium():
+    return render_template('premium.html')
 
 # Dashboard Route (Requires Login)
 @routes.route("/dashboard")
@@ -87,6 +90,17 @@ def dashboard():
     # Calculate total money borrowed by the user
     total_borrowed = sum(transaction.amount for transaction in borrowed_transactions)
 
+    rate = float(str(random.uniform(8,15))[:4])
+
+    current = False
+
+    if 'error' not in session:
+        pass
+    elif session['error']:
+        current = session['error']
+        session['error'] = False
+
+
     return render_template(
         'dashboard2.html',
         user=current_user,
@@ -94,8 +108,11 @@ def dashboard():
         lent=lent_transactions,
         borrowed=borrowed_transactions,
         total_lent=total_lent,
-        total_borrowed=total_borrowed
+        total_borrowed=total_borrowed,
+        rate = rate,
+        error = current or False
     )
+
 
 # Logout Route
 @routes.route("/logout")
@@ -134,8 +151,8 @@ def add_transaction():
 @login_required
 def publish_lending_request():
     amount = request.form.get('amount')
-    time_period = request.form.get('time_period')
-    rate = request.form.get('rate')
+    time_period = str(request.form.get('time_value')) + " " + request.form.get('time_unit')
+    rate = request.form.get("rate", type=float) 
 
     new_request = LendingRequest(
         user_id=current_user.id,
@@ -185,6 +202,9 @@ def payments():
 @routes.route('/lend/<int:lending_req_id>', methods=['GET', 'POST'])
 @login_required
 def lend_request(lending_req_id):
+
+    from block import record_transaction_on_blockchain
+
     lending_request = LendingRequest.query.get_or_404(lending_req_id)
 
     if request.method == 'GET':
@@ -193,6 +213,7 @@ def lend_request(lending_req_id):
     # Ensure lender has enough balance
     if current_user.balance < lending_request.amount:
         flash("Insufficient balance to lend this amount.", "error")
+        session['error'] = True
         return show_dash()
 
     borrower = User.query.get(lending_request.user_id)
@@ -200,6 +221,7 @@ def lend_request(lending_req_id):
     if not borrower:
         flash("Borrower not found.", "error")
         return show_dash()
+        
 
     # Create transaction for lender
     lender_transaction = Transaction(
@@ -208,7 +230,7 @@ def lend_request(lending_req_id):
         type="lent",
         person_name=borrower.username,
         time_period=lending_request.time_period,
-        rate=lending_request.interest_rate,
+        rate=lending_request.interest_rate-0.75,
         lend_id=lending_request.id
     )
 
@@ -230,12 +252,28 @@ def lend_request(lending_req_id):
     # Save to DB
     db.session.add(lender_transaction)
     db.session.add(borrower_transaction)
+
+    blockchain_hash = record_transaction_on_blockchain(
+        lender=current_user.username,
+        borrower=borrower.username,
+        amount=lending_request.amount,
+        duration=lending_request.time_period,
+        rate= lending_request.interest_rate
+    )
+
     db.session.delete(lending_request)
     db.session.commit()
 
     flash(f"Successfully lent ${lending_request.amount} to {borrower.username}.", "success")
     return show_dash()
 
+
+# @routes.route("/explorer")
+# def blockchain_explorer():
+#     blocks = Block.query.order_by(Block.index.asc()).all()
+#     transactions = BlockchainTransaction.query.all()
+    
+#     return render_template("blockchain_explorer.html", blocks=blocks, transactions=transactions)
 
 @routes.route('/users/<int:userid>')
 @login_required
