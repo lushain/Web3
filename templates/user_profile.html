@@ -16,8 +16,8 @@
     <!-- Navbar -->
     <nav class="bg-white shadow-md p-4 flex justify-between items-center">
         <div class="text-xl font-bold"><!-- Logo -->
-            <div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
-                <span class="text-4xl font-bold">Cred Sure</span></div></div>
+            <a href="/"></a><div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
+                <span class="text-4xl font-bold">Cred Sure</span></div></div></a>
         <a href="/dashboard" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Back to Dashboard</a>
     </nav>
 
@@ -27,7 +27,12 @@
             {{ user.username[0].upper() }}
         </div>
         <div>
-            <p class="text-3xl text-gray-600 font-semibold">{{ user.username }}</p>
+            <p class="text-3xl flex items-center text-gray-600 font-semibold">{{ user.username }} 
+                {% if current_user.premium %}
+                <span>
+                    <img class="h-12 w-auto mr-3" src="/static/premium-account.png" alt="">
+                </span>
+                {% endif %}</p>
             <p class="text-gray-500">{{ user.email }}</p>
 
             <div class="mt-5 cred-score">

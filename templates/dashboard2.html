@@ -63,12 +63,12 @@
     <!-- Header -->
     <header class="bg-white shadow-sm">
         <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
-                <span class="text-4xl font-bold">CredSure</span></div>
+            <a href="/"><div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
+                <span class="text-4xl font-bold">CredSure</span></div></a>
             
             <div class="flex items-center">
                 <span class="mr-4 hidden sm:inline-block">Balance: ₹{{ current_user.balance }}</span>
-                <span><svg class="h-7 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="">
+                <span class="pointer"><svg class="h-7 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                  <path d="M12 3C8.69 3 6 5.69 6 9v5.5L4 17v1h16v-1l-2-2.5V9c0-3.31-2.69-6-6-6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="
                     color: #12a7c7;
                 "></path>
@@ -119,7 +119,14 @@
                     {{ current_user.username[0].upper() }}
                 </div>
                 <div class="ml-4">
-                    <h2 class="text-lg font-semibold">{{ current_user.username }}</h2>
+                    
+                    <h2 class="text-lg flex items-center font-semibold">{{ current_user.username }}
+                        {% if current_user.premium %}
+                        <span>
+                            <img class="h-10 w-auto mr-3" src="/static/premium-account.png" alt="">
+                        </span>
+                        {% endif %}
+                    </h2>
                     <p class="text-gray-600 text-sm">{{ current_user.email }}</p>
                 </div>
             </div>
@@ -140,6 +147,12 @@
             </div>
             
             <div >
+                {% if current_user.premium %}
+                <a href="/users/{{ current_user.id }}"><button style="background-image: linear-gradient(to right bottom, #58b0f3, #0098f9, #007efb, #0060f7, #123aeb);box-shadow: 0px 0px 28px 10px rgba(72, 136, 232, 0.8);"
+                    class="font-medium py-2 px-6 ml-[15px] text-white font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg shadow-lg hover:scale-105 duration-200 hover:drop-shadow-2xl hover:shadow-[#7dd3fc] hover:cursor-pointer">
+                    View Profile
+                  </button></a>
+                {% else %}
                 <a href="/users/{{ current_user.id }}"><button class="bg-primary hover:bg-primaryDark text-white font-medium py-2 px-6 rounded-md transition duration-200">
                     View Profile
                 </button></a>
@@ -147,6 +160,7 @@
                     class="font-medium py-2 px-6 ml-[15px] text-white font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg shadow-lg hover:scale-105 duration-200 hover:drop-shadow-2xl hover:shadow-[#7dd3fc] hover:cursor-pointer">
                     Get Premium
                   </button></a>
+                  {% endif %}
             </div>
             
         </div>

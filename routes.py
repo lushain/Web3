@@ -120,7 +120,7 @@ def dashboard():
 def logout():
     logout_user()
     flash("You have been logged out.", "success")
-    return redirect(url_for("routes.login"))
+    return redirect("/")
 
 
 @routes.route("/add_transaction", methods=["POST"])
@@ -197,7 +197,20 @@ def payments():
         
     return render_template("payments.html")
 
+@routes.route("/upgrade", methods=["GET", "POST"])
+@login_required
+def upgrade():
+    if current_user.premium:
+        return show_dash()
+    
+    if request.method == "POST":
 
+        current_user.premium = True
+        db.session.commit()
+
+        return show_dash()
+
+    return render_template("upgrade.html")
 
 @routes.route('/lend/<int:lending_req_id>', methods=['GET', 'POST'])
 @login_required

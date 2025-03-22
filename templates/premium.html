@@ -41,7 +41,7 @@
 <body class="bg-white font-sans">
     <!-- Navigation -->
     <nav class="bg-white shadow-sm py-4 fixed w-full z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
@@ -54,9 +54,13 @@
 
                 {% if current_user.is_authenticated %}
                     {% if current_user.premium %}
-                    <a href="/dashboard" style="background-image: linear-gradient(to right bottom, #58b0f3, #0098f9, #007efb, #0060f7, #123aeb);box-shadow: 0px 0px 28px 10px rgba(72, 136, 232, 0.8);" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md"></a>
+                    <a href="/dashboard" style="background-image: linear-gradient(to right bottom, #58b0f3, #0098f9, #007efb, #0060f7, #123aeb);box-shadow: 0px 0px 28px 10px rgba(72, 136, 232, 0.8);" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Dashboard</a>
                     {% else %}
-                    <a href="/upgrade" style="background-image: linear-gradient(to right bottom, #58b0f3, #0098f9, #007efb, #0060f7, #123aeb);box-shadow: 0px 0px 28px 10px rgba(72, 136, 232, 0.8);" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Upgrade Now</a>
+                    <div>
+                        <a href="/dashboard" class="bg-[#12a7c7] text-white mr-4 px-4 py-2 rounded-md">Dashboard</a>
+                        <a href="/upgrade" style="background-image: linear-gradient(to right bottom, #58b0f3, #0098f9, #007efb, #0060f7, #123aeb);box-shadow: 0px 0px 28px 10px rgba(72, 136, 232, 0.8);" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Upgrade Now</a>
+                    </div>
+                    
                     {% endif %}
                 {% else %}
                 <div>
@@ -136,9 +140,9 @@
                         </div>
                     </div>
                     <div class="mt-8">
-                        <button class="w-full py-3 px-4 bg-white hover:bg-gray-light text-primary font-bold rounded-lg border border-primary transition-colors">
+                        <a href="/dashboard"><button class="w-full py-3 px-4 bg-white hover:bg-gray-light text-primary font-bold rounded-lg border border-primary transition-colors">
                             Get Started
-                        </button>
+                        </button></a>
                     </div>
                 </div>
 
@@ -194,9 +198,9 @@
                         </div>
                     </div>
                     <div class="mt-8">
-                        <button class="w-full py-3 px-4 bg-white hover:bg-gray-light text-primary font-bold rounded-lg transition-colors">
+                        <a href="/upgrade"><button class="w-full py-3 px-4 bg-white hover:bg-gray-light text-primary font-bold rounded-lg transition-colors">
                             Upgrade Now
-                        </button>
+                        </button></a>
                     </div>
                 </div>
             </div>
@@ -321,7 +325,7 @@
                         </p>
                         <div class="mt-8 flex justify-center">
                             <div class="inline-flex rounded-md shadow">
-                                <a href="#" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
+                                <a href="/dashboard" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
                                     Get Started
                                 </a>
                             </div>
