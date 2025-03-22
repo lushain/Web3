@@ -297,7 +297,7 @@ def view_user_profile(userid):
     active_lending_requests = LendingRequest.query.filter_by(user_id=userid).all()
 
     if current_user.id != user.id and not active_lending_requests:
-        flash("This user currently has no active lending requests.", "error")
+        session['error'] = True
         return show_dash()
     
 
