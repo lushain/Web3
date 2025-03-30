@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from models import db, User, Transaction, LendingRequest, Block, BlockchainTransaction
@@ -48,6 +48,8 @@ def register():
 
         # Log in the user automatically after registration
         login_user(new_user)
+        session['color'] = "green"
+        session['notif'] = "Logged In as " + new_user.username
 
         return show_dash()
 
@@ -401,6 +403,6 @@ def files():
         current_user.verified = True
         db.session.commit()
 
-        return redirect(f"/users/{current_user.id}")
+        return jsonify({'redirect': f'/users/{current_user.id}'})
 
     return render_template('files.html', notif=session['notif'], color=session['color'])

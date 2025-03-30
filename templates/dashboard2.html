@@ -84,10 +84,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
-                    <div class="absolute right-0 mt-2 bg-white shadow-md rounded-xl w-40 hidden" id="dropdown">
+                    <div class="absolute right-0 mt-2 bg-white shadow-md rounded-xl w-48 hidden" id="dropdown">
                         <a href="/users/{{ current_user.id }}" class="block px-4 py-2 text-[#12a7c7] hover:bg-gray-100">Profile</a>
-                        <a href="/payments" class="block px-4 py-2 text-[#12a7c7] hover:bg-gray-100">Add</a>
-                        <a href="/payments" class="block px-4 py-2 text-[#12a7c7] hover:bg-gray-100">Withdraw</a>
+                        <a href="/payments" class="block px-4 py-2 text-[#12a7c7] hover:bg-gray-100">Add Money</a>
+                        <a href="/payments" class="block px-4 py-2 text-[#12a7c7] hover:bg-gray-100">Withdraw Money</a>
                         <a href="{{ url_for('routes.logout') }}" class="block px-4 py-2 text-red-500 hover:bg-gray-100">Logout</a>
                     </div>
                 </div>
@@ -166,6 +166,14 @@
         </div>
     </section>
 
+    {% if not current_user.verified and current_user.id == user.id %}
+    <div class="mt-6 max-w-7xl mx-auto p-4 ">
+        <div class="flex justify-between items-center bg-red-400 shadow-md rounded-md p-4">
+            <h2 class="text-lg font-bold">Upload Documents For KYC</h2>
+            <a href="/files" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Upload</a>
+        </div>
+    </div>
+    {% endif %}
 
      <!-- Main Content -->
     <div class="container container max-w-7xl mx-auto px-4 py-6 mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">

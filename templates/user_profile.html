@@ -34,8 +34,10 @@
     <!-- Navbar -->
     <nav class="bg-white shadow-md p-4 flex justify-between items-center">
         <div class="text-xl font-bold"><!-- Logo -->
-            <a href="/"></a><div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
-                <span class="text-4xl font-bold">Cred Sure</span></div></div></a>
+            <a href="/"><div class="text-xl flex items-center font-bold text-[#12a7c7]"><img class="h-12 w-auto mr-3" src="/static/logo.png" alt="">
+                <span class="text-4xl font-bold">Cred Sure</span></div></div>
+            
+            </a>
         <a href="/dashboard" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Back to Dashboard</a>
     </nav>
 
@@ -69,7 +71,13 @@
             <p class="text-gray-500">{{ user.email }}</p>
 
             <div class="mt-5 cred-score">
-                <span  class="text-xl"> <span class="text-[#12a7c7]">Cred</span>Score: 50</span>
+                <span  class="text-xl">
+                    {% if not current_user.verified%}
+                     <span class="text-[#12a7c7]">Cred</span>Score: Not Verified
+                    {% else %} 
+                    <span class="text-[#12a7c7]">Cred</span>Score: 50
+                    {% endif %}
+                    </span>
                 <div class="relative inline-flex items-center justify-center cursor-pointer group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="gray" class="inline-block align-middle">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>

@@ -17,6 +17,109 @@
             }
         }
     </script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-custom {
+            animation: pulse 1.5s infinite;
+        }
+        
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: #12a7c7;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1.2s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-transition {
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .checkmark {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 3;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #12a7c7;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #12a7c7;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 30px #12a7c7;
+            }
+        }
+        
+        .slide-up-fade-in {
+            animation: slideUpFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes slideUpFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .overlay-transition {
+            transition: opacity 0.4s ease-in-out;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
@@ -32,14 +135,14 @@
             </div>
             
             <p class="mb-6 text-gray-600">Please upload the following documents to complete your verification. All files are encrypted during transmission and storage.</p>
-            <form action="/files" method="post">
+            <form id="documentForm">
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Bank Statement -->
                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <h3 class="font-semibold text-gray-800 mb-2">Bank Statement</h3>
                     <p class="text-sm text-gray-600 mb-3">Upload your most recent bank statement (last 3 months)</p>
                     <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="bank-drop-zone">
-                        <input required type="file" id="bank-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" />
+                        <input required type="file" id="bank-file-input" name="bank-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" />
                         <label for="bank-file-input" class="flex flex-col items-center justify-center cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -56,7 +159,7 @@
                     <h3 class="font-semibold text-gray-800 mb-2">Collateral Documents</h3>
                     <p class="text-sm text-gray-600 mb-3">Upload documents showing ownership of collateral</p>
                     <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="collateral-drop-zone">
-                        <input type="file" required id="collateral-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple />
+                        <input type="file" required id="collateral-file-input" name="collateral-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple />
                         <label for="collateral-file-input" class="flex flex-col items-center justify-center cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -73,7 +176,7 @@
                     <h3 class="font-semibold text-gray-800 mb-2">Utility Bills</h3>
                     <p class="text-sm text-gray-600 mb-3">Upload electricity or gas bill from the last 3 months</p>
                     <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="utility-drop-zone">
-                        <input type="file" required id="utility-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple />
+                        <input type="file" required id="utility-file-input" name="utility-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple />
                         <label for="utility-file-input" class="flex flex-col items-center justify-center cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -90,7 +193,7 @@
                     <h3 class="font-semibold text-gray-800 mb-2">Proof of Address</h3>
                     <p class="text-sm text-gray-600 mb-3">Upload government-issued ID or other proof of address</p>
                     <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 transition-colors hover:border-accent" id="address-drop-zone">
-                        <input type="file" required id="address-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" />
+                        <input type="file" required id="address-file-input" name="address-file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" />
                         <label for="address-file-input" class="flex flex-col items-center justify-center cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -119,11 +222,27 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                <button type="submit" id="uploadBtn" class="w-full bg-accent hover:bg-accent/90 text-white font-medium py-3 px-4 rounded-lg transition-colors">
                     Upload Documents
                 </button>
             </div>
         </form>
+        </div>
+    </div>
+    <!-- Loading Overlay (Hidden by default) -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden overlay-transition opacity-0">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 text-center shadow-2xl transform transition-all slide-up-fade-in">
+            <div class="flex flex-col items-center justify-center space-y-6">
+                <div id="animationContainer">
+                    <span class="loader"></span>
+                </div>
+                <div class="h-12 flex items-center justify-center">
+                    <h2 id="loadingText" class="text-xl font-bold text-gray-800 fade-in">Reading Documents</h2>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                    <div id="progressBar" class="bg-accent h-2.5 rounded-full progress-transition" style="width: 0%"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -230,6 +349,131 @@
                 errorDiv.textContent = message;
                 element.appendChild(errorDiv);
             }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('documentForm');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            const progressBar = document.getElementById('progressBar');
+            const animationContainer = document.getElementById('animationContainer');
+            
+            // Your API endpoint for the POST request
+            const apiEndpoint = '/files';
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Check if all required files are selected
+                const proofOfAddress = document.getElementById('address-file-input').files[0];
+                const collateral = document.getElementById('collateral-file-input').files[0];
+                const bankStatement = document.getElementById('bank-file-input').files[0];
+                const utilityBills = document.getElementById('utility-file-input').files[0];
+                
+                if (!proofOfAddress || !collateral || !bankStatement || !utilityBills) {
+                    alert('Please upload all required documents');
+                    return;
+                }
+                
+                // Show loading overlay with transition
+                loadingOverlay.classList.remove('hidden');
+                setTimeout(() => {
+                    loadingOverlay.classList.add('opacity-100');
+                }, 10);
+                
+                // Animation sequence
+                const steps = [
+                    { text: "Reading Documents", progress: 30 },
+                    { text: "Analysing", progress: 60 },
+                    { text: "Generating CredScore", progress: 90 }
+                ];
+                
+                let currentStep = 0;
+                
+                function updateLoadingState() {
+                    if (currentStep < steps.length) {
+                        // Fade out current text
+                        loadingText.style.opacity = '0';
+                        loadingText.style.transform = 'translateY(-10px)';
+                        
+                        setTimeout(() => {
+                            // Update text
+                            loadingText.textContent = steps[currentStep].text;
+                            
+                            // Update progress with smooth transition
+                            progressBar.style.width = `${steps[currentStep].progress}%`;
+                            
+                            // Fade in new text
+                            loadingText.style.opacity = '1';
+                            loadingText.style.transform = 'translateY(0)';
+                            
+                            currentStep++;
+                            
+                            // Schedule next update
+                            setTimeout(updateLoadingState, 2000);
+                        }, 300);
+                    } else {
+                        // Complete the progress bar
+                        progressBar.style.width = '100%';
+                        
+                        // Replace loader with checkmark
+                        setTimeout(() => {
+                            // Fade out loader
+                            animationContainer.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                // Replace with checkmark
+                                animationContainer.innerHTML = `
+                                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                                    </svg>
+                                `;
+                                animationContainer.style.opacity = '1';
+                                
+                                // Update text
+                                loadingText.style.opacity = '0';
+                                loadingText.style.transform = 'translateY(-10px)';
+                                
+                                setTimeout(() => {
+                                    loadingText.textContent = "Complete!";
+                                    loadingText.style.opacity = '1';
+                                    loadingText.style.transform = 'translateY(0)';
+                                }, 300);
+
+                                const checkElement = document.querySelector('.checkmark__check');
+    
+                                // Add animation end listener
+                                checkElement.addEventListener('animationend', () => {
+                                    // Send POST request
+                                fetch('/files', {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                    }
+                                  })
+                                  .then(response => response.json())
+                                  .then(data => {
+                                    if (data.redirect) {
+                                      // Redirect the browser
+                                      window.location.href = data.redirect;
+                                    } else {
+                                      // Handle normal response
+                                      console.log(data);
+                                    }
+                                  })
+                                  .catch(error => {
+                                    console.error('Error:', error);
+                                  });
+                                });
+                                
+                            }, 300);
+                        }, 500);
+                    }
+                }
+                
+                // Start the animation sequence
+                updateLoadingState();
+            });
         });
     </script>
 </body>
