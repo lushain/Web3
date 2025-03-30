@@ -15,6 +15,10 @@ routes = Blueprint("routes", __name__)
 def show_dash():
     return redirect(url_for("routes.dashboard"))
 
+def show_all(url, notif,**kwargs):
+    
+    return render_template(url, notif=notif)
+
 # User Loader for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
@@ -31,6 +35,9 @@ def register():
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash("Email already registered. Please login.", "danger")
+            session['notif'] = "Email already registered. Please login."
+            session['color'] = "red"
+
             return redirect(url_for("routes.login"))
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
@@ -43,7 +50,6 @@ def register():
         login_user(new_user)
 
         return show_dash()
-        
 
     return render_template("register.html")
 
@@ -58,15 +64,37 @@ def login():
 
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
+            session['color'] = "green"
+            session['notif'] = "Logged In as " + user.username
             return show_dash()
         else:
             flash("Invalid email or password.", "danger")
+            session['color'] = "red"
+            session['notif'] = "Invalid email or password."
 
-    return render_template("login.html")
+    current = False
+    color = "red"
+    if 'notif' not in session:
+        pass
+    elif session['notif']:
+        current = session['notif']
+        color = session['color']
+        session['notif'] = False
+
+    return render_template("login.html", notif=current or False, color=color)
 
 @routes.route('/')
 def index():
-    return render_template('index.html')
+    current = False
+    color = "red"
+
+    if 'notif' not in session:
+        pass
+    elif session['notif']:
+        current = session['notif']
+        color = session['color']
+        session['notif'] = False
+    return render_template('index.html', notif=current, color = color)
 
 @routes.route('/premium')
 def premium():
@@ -93,12 +121,14 @@ def dashboard():
     rate = float(str(random.uniform(8,15))[:4])
 
     current = False
+    color = "red"
 
-    if 'error' not in session:
+    if 'notif' not in session:
         pass
-    elif session['error']:
-        current = session['error']
-        session['error'] = False
+    elif session['notif']:
+        current = session['notif']
+        color = session['color']
+        session['notif'] = False
 
 
     return render_template(
@@ -110,7 +140,8 @@ def dashboard():
         total_lent=total_lent,
         total_borrowed=total_borrowed,
         rate = rate,
-        error = current or False
+        notif = current or False,
+        color = color
     )
 
 
@@ -120,6 +151,8 @@ def dashboard():
 def logout():
     logout_user()
     flash("You have been logged out.", "success")
+    session['notif'] = "You have been logged out."
+    session['color'] = "green"
     return redirect("/")
 
 
@@ -144,6 +177,8 @@ def add_transaction():
     db.session.add(new_transaction)
     db.session.commit()
     flash("Transaction added successfully!", "success")
+    session['notif'] = "Transaction added successfully!"
+    session['color'] = "green"
     
     return show_dash()
 
@@ -165,6 +200,8 @@ def publish_lending_request():
     db.session.commit()
 
     flash("Lending request published successfully!", "success")
+    session['notif'] = "Lending request published successfully!"
+    session['color'] = "green"
     return show_dash()
 
 @routes.route('/marketplace')
@@ -184,18 +221,32 @@ def payments():
 
         if request.form['transaction_type'] == 'deposit':
             current_user.balance += amount
+            session['notif'] = f"Deposited ₹{amount} to your account."
+            session['color'] = "green"
 
         elif request.form['transaction_type'] == 'withdraw':
             if current_user.balance < amount:
                 flash("Insufficient balance.", "danger")
+                session['notif'] = "Insufficient balance."
+                session['color'] = "red"
                 return redirect(url_for("routes.payments"))
+            session['notif'] = f"Withdrew ₹{amount} from your account."
+            session['color'] = "green"
             current_user.balance -= amount
         db.session.commit()
 
         return show_dash()
 
-        
-    return render_template("payments.html")
+    current = False
+    color = "red"
+    if 'notif' not in session:
+        pass
+    elif session['notif']:
+        current = session['notif']
+        color = session['color']
+        session['notif'] = False
+
+    return render_template("payments.html", notif=current or False)
 
 @routes.route("/upgrade", methods=["GET", "POST"])
 @login_required
@@ -225,14 +276,18 @@ def lend_request(lending_req_id):
     
     # Ensure lender has enough balance
     if current_user.balance < lending_request.amount:
-        flash("Insufficient balance to lend this amount.", "error")
-        session['error'] = True
+        text = "Insufficient balance to lend this amount."
+        flash(text, "notif")
+        session['notif'] = text
+        session['color'] = "red"
         return show_dash()
 
     borrower = User.query.get(lending_request.user_id)
 
     if not borrower:
-        flash("Borrower not found.", "error")
+        flash("Borrower not found.", "notif")
+        session['notif'] = "Borrower not found."
+        session['color'] = "red"
         return show_dash()
         
 
@@ -277,7 +332,9 @@ def lend_request(lending_req_id):
     db.session.delete(lending_request)
     db.session.commit()
 
-    flash(f"Successfully lent ${lending_request.amount} to {borrower.username}.", "success")
+    flash(f"Successfully lent ₹{lending_request.amount} to {borrower.username}.", "success")
+    session['notif'] = f"Successfully lent ₹{lending_request.amount} to {borrower.username}."
+    session['color'] = "green"
     return show_dash()
 
 
@@ -295,12 +352,17 @@ def view_user_profile(userid):
 
     # Check if the user has an active lending request
     active_lending_requests = LendingRequest.query.filter_by(user_id=userid).all()
+    lender_transaction = Transaction.query.filter_by(user_id=current_user.id, person_name=user.username).first()
 
-    if current_user.id != user.id and not active_lending_requests:
-        session['error'] = True
+    if current_user.id != user.id and not active_lending_requests and lender_transaction:
+        session['notif'] = "Unable to view this user's profile."
+        session['color'] = "red"
         return show_dash()
     
-
+    if not current_user.verified:
+        session['notif'] = "Please upload your KYC documents."
+        session['color'] = "red"
+    
     # Fetch lending and borrowing history
     lending_history = Transaction.query.filter_by(user_id=userid, type="lent").all()
     borrowing_history = Transaction.query.filter_by(user_id=userid, type="borrowed").all()
@@ -310,6 +372,16 @@ def view_user_profile(userid):
     # Calculate total money borrowed by the user
     total_borrowed = sum(transaction.amount for transaction in borrowing_history)
 
+    current = False
+    color = "red"
+
+    if 'notif' not in session:
+        pass
+    elif session['notif']:
+        current = session['notif']
+        color = session['color']
+        session['notif'] = False
+
     return render_template(
         "user_profile.html",
         user=user,
@@ -317,7 +389,9 @@ def view_user_profile(userid):
         lending_history=lending_history,
         borrowing_history=borrowing_history,
         total_lent=total_lent,
-        total_borrowed=total_borrowed
+        total_borrowed=total_borrowed,
+        notif=current,
+        color=color
     )
 
 @routes.route('/files', methods=['GET', 'POST'])
@@ -328,4 +402,5 @@ def files():
         db.session.commit()
 
         return redirect(f"/users/{current_user.id}")
-    return render_template('files.html')
+
+    return render_template('files.html', notif=session['notif'], color=session['color'])

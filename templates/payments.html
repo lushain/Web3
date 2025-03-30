@@ -6,15 +6,33 @@
     <title>Payment Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/notif.css"/>
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    
     <div class="w-full max-w-md bg-white rounded-lg shadow-md overflow-hidden" x-data="paymentForm()">
         <!-- Header -->
         <div class="bg-indigo-600 p-6">
             <h1 class="text-white text-xl font-bold">Payment Gateway</h1>
             <p class="text-indigo-100 mt-1">Choose your preferred payment method</p>
         </div>
+
+        {% if notif %}
+        <div id="popup" class="fixed top-6 right-6 left-6
+            bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg text-center w-96 popup">
+            {{ notif }}
+        </div>
         
+        <script>
+            setTimeout(() => {
+                let popup = document.getElementById('popup');
+                popup.style.animation = 'fadeOut 0.5s ease-in-out';
+                setTimeout(() => { popup.style.display = 'none'; }, 500);
+            }, 3000);
+        </script>
+        {% endif %}
+
+            
         <!-- Payment Form -->
         <form id="paymentForm" action="/payments" method="POST" class="p-6">
             <!-- Payment Method Selection -->

@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="static/notif.css"/>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-100">
+
+    {% if notif %}
+    <div id="popup" class="fixed top-6 right-6 left-6
+        bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg text-left w-96 popup">
+        {{ notif }}
+    </div>
+    
+    <script>
+        setTimeout(() => {
+            let popup = document.getElementById('popup');
+            popup.style.animation = 'fadeOut 0.5s ease-in-out';
+            setTimeout(() => { popup.style.display = 'none'; }, 500);
+        }, 3000);
+    </script>
+    {% endif %}
 
     <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold text-center text-gray-800">Login</h2>

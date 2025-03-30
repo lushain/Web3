@@ -5,9 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ user.username }}'s Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="static/notif.css"/>
     <style>
         body {
             font-family: 'Inter', sans-serif;
+        }
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Fade-out animation */
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        /* Popup styling */
+        .popup {
+            animation: fadeIn 0.5s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -20,6 +38,21 @@
                 <span class="text-4xl font-bold">Cred Sure</span></div></div></a>
         <a href="/dashboard" class="bg-[#12a7c7] text-white px-4 py-2 rounded-md">Back to Dashboard</a>
     </nav>
+
+    {% if notif %}
+    <div id="popup" class="fixed top-6 right-6 left-6
+        bg-{{ color }}-500 text-white px-6 py-4 rounded-lg shadow-lg text-left w-96 popup">
+        {{ notif }}
+    </div>
+    
+    <script>
+        setTimeout(() => {
+            let popup = document.getElementById('popup');
+            popup.style.animation = 'fadeOut 0.5s ease-in-out';
+            setTimeout(() => { popup.style.display = 'none'; }, 500);
+        }, 3000);
+    </script>
+    {% endif %}
 
     <!-- User Profile Section -->
     <div class="container max-w-7xl mx-auto p-6 bg-white shadow-md rounded-md mt-4 flex items-center space-x-4">
@@ -134,7 +167,7 @@
             <tbody>
                 {% for transaction in lending_history %}
                 <tr>
-                    <td class="p-2 border-b">{{ transaction.person_name }}</td>
+                    <td class="p-2 border-b"><a href="">{{ transaction.person_name }}</a></td>
                     <td class="p-2 border-b">₹{{ transaction.amount }}</td>
                     <td class="p-2 border-b">{{ transaction.time_period }}</td>
                     <td class="p-2 border-b">{{ transaction.rate }}%</td>

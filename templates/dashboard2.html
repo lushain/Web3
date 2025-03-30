@@ -96,10 +96,10 @@
     </header>
     <!-- Popup Notification -->
   
-    {% if error %}
+    {% if notif %}
     <div id="popup" class="fixed top-6 right-6 left-6
-        bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg text-center w-96 popup">
-        ⚠️ Oops!!
+        bg-{{ color }}-500 text-white px-6 py-4 rounded-lg shadow-lg text-left w-96 popup">
+        {{ notif }}
     </div>
     
     <script>
@@ -330,68 +330,70 @@
     </div>    
 
     <script>
-        document.getElementById("openModal").addEventListener("click", function() {
-            document.getElementById("modal").classList.remove("hidden");
-        });
-        document.getElementById("closeModal").addEventListener("click", function() {
-            document.getElementById("modal").classList.add("hidden");
-        });
-        // JavaScript for interactive elements
-        document.addEventListener('DOMContentLoaded', function() {
-            // Modal functionality
-
-            // Form submission
-            requestForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Get form values
-                const amount = document.getElementById('amount').value;
-                const duration = document.getElementById('duration').value;
-                const rate = document.getElementById('rate').value;
-                
-                // Here you would typically send this data to your backend
-                console.log('New request:', { amount, duration, rate });
-                
-                // Add to marketplace table (for demo purposes)
-                const marketplaceTable = document.querySelector('#marketplace tbody');
-                const newRow = document.createElement('tr');
-                newRow.classList.add('hover:bg-gray-50');
-                newRow.innerHTML = `
-                    <td class="py-3 px-4">vyom</td>
-                    <td class="py-3 px-4">₹₹{parseFloat(amount).toFixed(1)}</td>
-                    <td class="py-3 px-4">₹{duration}</td>
-                    <td class="py-3 px-4 text-green-600">₹{parseFloat(rate).toFixed(2)}%</td>
-                    <td class="py-3 px-4">03/16/25</td>
-                    <td class="py-3 px-4">
-                        <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-1 px-4 rounded-md text-sm transition duration-200">
-                            Lend
-                        </button>
-                    </td>
-                `;
-                
-                closeModal();
+        if (document.getElementById("openModal")){
+            document.getElementById("openModal").addEventListener("click", function() {
+                document.getElementById("modal").classList.remove("hidden");
             });
-
-            // Empty states for tables
-            const lentTableBody = document.getElementById('lentTableBody');
-            const borrowedTableBody = document.getElementById('borrowedTableBody');
-            const lentEmptyState = document.getElementById('lentEmptyState');
-            const borrowedEmptyState = document.getElementById('borrowedEmptyState');
-
-            // Check if tables are empty and show empty state
-            if (lentTableBody.children.length === 0) {
-                lentEmptyState.style.display = 'block';
-            } else {
-                lentEmptyState.style.display = 'none';
-            }
-
-            if (borrowedTableBody.children.length === 0) {
-                borrowedEmptyState.style.display = 'block';
-            } else {
-                borrowedEmptyState.style.display = 'none';
-            }
-        });
-
+            document.getElementById("closeModal").addEventListener("click", function() {
+                document.getElementById("modal").classList.add("hidden");
+            });
+            // JavaScript for interactive elements
+            document.addEventListener('DOMContentLoaded', function() {
+                // Modal functionality
+    
+                // Form submission
+                requestForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form values
+                    const amount = document.getElementById('amount').value;
+                    const duration = document.getElementById('duration').value;
+                    const rate = document.getElementById('rate').value;
+                    
+                    // Here you would typically send this data to your backend
+                    console.log('New request:', { amount, duration, rate });
+                    
+                    // Add to marketplace table (for demo purposes)
+                    const marketplaceTable = document.querySelector('#marketplace tbody');
+                    const newRow = document.createElement('tr');
+                    newRow.classList.add('hover:bg-gray-50');
+                    newRow.innerHTML = `
+                        <td class="py-3 px-4">vyom</td>
+                        <td class="py-3 px-4">₹₹{parseFloat(amount).toFixed(1)}</td>
+                        <td class="py-3 px-4">₹{duration}</td>
+                        <td class="py-3 px-4 text-green-600">₹{parseFloat(rate).toFixed(2)}%</td>
+                        <td class="py-3 px-4">03/16/25</td>
+                        <td class="py-3 px-4">
+                            <button class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-1 px-4 rounded-md text-sm transition duration-200">
+                                Lend
+                            </button>
+                        </td>
+                    `;
+                    
+                    closeModal();
+                });
+    
+                // Empty states for tables
+                const lentTableBody = document.getElementById('lentTableBody');
+                const borrowedTableBody = document.getElementById('borrowedTableBody');
+                const lentEmptyState = document.getElementById('lentEmptyState');
+                const borrowedEmptyState = document.getElementById('borrowedEmptyState');
+    
+                // Check if tables are empty and show empty state
+                if (lentTableBody.children.length === 0) {
+                    lentEmptyState.style.display = 'block';
+                } else {
+                    lentEmptyState.style.display = 'none';
+                }
+    
+                if (borrowedTableBody.children.length === 0) {
+                    borrowedEmptyState.style.display = 'block';
+                } else {
+                    borrowedEmptyState.style.display = 'none';
+                }
+            });
+        }
+        
         document.querySelector(".relative button").addEventListener("click", function() {
             document.getElementById("dropdown").classList.toggle("hidden");
         });

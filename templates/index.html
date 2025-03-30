@@ -40,6 +40,7 @@
             left: 0;
           }
     </style>
+    <link rel="stylesheet" type="text/css" href="static/notif.css"/>
     <script>
         tailwind.config = {
             theme: {
@@ -81,6 +82,21 @@
             </div>
         </div>
     </nav>
+
+    {% if notif %}
+    <div style="z-index: 40;" id="popup" class="fixed top-6 right-6 left-6
+        bg-{{ color }}-500 text-white px-6 py-4 rounded-lg shadow-lg text-left w-96 popup">
+        {{ notif }}
+    </div>
+    
+    <script>
+        setTimeout(() => {
+            let popup = document.getElementById('popup');
+            popup.style.animation = 'fadeOut 0.5s ease-in-out';
+            setTimeout(() => { popup.style.display = 'none'; }, 500);
+        }, 3000);
+    </script>
+    {% endif %}
 
     <!-- Hero Section with Video Background -->
     <section id="home" class="relative h-screen pt-24 pb-16 overflow-hidden">
